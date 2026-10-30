@@ -19,7 +19,7 @@ Frontier large language models (LLMs) equipped with extended test-time reasoning
 This repository provides the official implementation of **Dual-Track Decoupled Reasoning (DTDR)** and the forensic audit codebase for our paper:
 
 > **The Reasoning Paradox in Scientific Sandboxes: Why Extended Reasoning Fails in Autonomous Bioinformatics and How to Fix It**  
-> *Redeemer S. Okekale, Derek Amuna, Rachel A. Akorful, Anjali Rathod, Collins M. Morang'a, Peter K. Quashie, Emmanuel A. Asiamah, Rosina A. Carr, and Ishmael Adase*  
+> *Redeemer S. Okekale, Derek Amuna, Rachel A. Akorful, Anjali Rathod, Collins M. Morang'a, Peter K. Quashie, Emmanuel A. Asiamah, Rosina A. Carr, Ishmael Adase, and Samuel M. Kumordzi*  
 > *University of Ghana | University of Michigan*  
 > arXiv: `q-bio.QM` / `cs.AI`
 
@@ -199,7 +199,7 @@ If you build upon this work or use the DTDR scaffold in your research, please ci
 ```bibtex
 @article{okekale2026reasoning,
   title   = {The Reasoning Paradox in Scientific Sandboxes: Why Extended Reasoning Fails in Autonomous Bioinformatics and How to Fix It},
-  author  = {Okekale, Redeemer S. and Amuna, Derek and Akorful, Rachel A. and Rathod, Anjali and Morang'a, Collins M. and Quashie, Peter K. and Asiamah, Emmanuel A. and Carr, Rosina A. and Adase, Ishmael},
+  author  = {Okekale, Redeemer S. and Amuna, Derek and Akorful, Rachel A. and Rathod, Anjali and Morang'a, Collins M. and Quashie, Peter K. and Asiamah, Emmanuel A. and Carr, Rosina A. and Adase, Ishmael and Kumordzi, Samuel M.},
   journal = {arXiv preprint arXiv:2603.XXXXX},
   year    = {2026},
   url     = {https://github.com/Sredeemer/bix-bench-research}
