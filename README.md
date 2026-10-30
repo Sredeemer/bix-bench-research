@@ -1,7 +1,7 @@
 <div align="center">
 
 # The Reasoning Paradox in Scientific Sandboxes
-### Why Test-Time Compute Fails in Autonomous Bioinformatics and How to Fix It
+### Why Extended Reasoning Fails in Autonomous Bioinformatics and How to Fix It
 
 [![arXiv](https://img.shields.io/badge/arXiv-Preprint-b31b1b.svg)](latex/main.tex)
 [![Dataset](https://img.shields.io/badge/Hugging%20Face-BixBench%20Dataset-ffcc00.svg)](https://huggingface.co/datasets/futurehouse/BixBench)
@@ -18,9 +18,9 @@ Frontier large language models (LLMs) equipped with extended test-time reasoning
 
 This repository provides the official implementation of **Dual-Track Decoupled Reasoning (DTDR)** and the forensic audit codebase for our paper:
 
-> **The Reasoning Paradox in Scientific Sandboxes: Why Test-Time Compute Fails in Autonomous Bioinformatics and How to Fix It**  
-> *Derek Amuna, Redeemer Salami Okekale, Rachel Ama Adadziwa Akorful, Felix Coker, Collins M. Morang'a, Peter Kojo Quashie, Emmanuel Akomanin Asiamah, and Rosina Afua Ampomah Carr*  
-> *University of Ghana | University of Health and Allied Sciences (UHAS) | University of Michigan*  
+> **The Reasoning Paradox in Scientific Sandboxes: Why Extended Reasoning Fails in Autonomous Bioinformatics and How to Fix It**  
+> *Redeemer S. Okekale, Derek Amuna, Rachel A. Akorful, Anjali Rathod, Collins M. Morang'a, Peter K. Quashie, Emmanuel A. Asiamah, Rosina A. Carr, and Ishmael Adase*  
+> *University of Ghana | University of Michigan*  
 > arXiv: `q-bio.QM` / `cs.AI`
 
 ---
@@ -197,9 +197,9 @@ To generate the primary biological workflow figure in **BioRender**, use the fol
 If you build upon this work or use the DTDR scaffold in your research, please cite:
 
 ```bibtex
-@article{amuna2026reasoning,
-  title   = {The Reasoning Paradox in Scientific Sandboxes: Why Test-Time Compute Fails in Autonomous Bioinformatics and How to Fix It},
-  author  = {Amuna, Derek and Salami Okekale, Redeemer and Akorful, Rachel Ama Adadziwa and Coker, Felix and Morang'a, Collins M. and Quashie, Peter Kojo and Asiamah, Emmanuel Akomanin and Carr, Rosina Afua Ampomah},
+@article{okekale2026reasoning,
+  title   = {The Reasoning Paradox in Scientific Sandboxes: Why Extended Reasoning Fails in Autonomous Bioinformatics and How to Fix It},
+  author  = {Okekale, Redeemer S. and Amuna, Derek and Akorful, Rachel A. and Rathod, Anjali and Morang'a, Collins M. and Quashie, Peter K. and Asiamah, Emmanuel A. and Carr, Rosina A. and Adase, Ishmael},
   journal = {arXiv preprint arXiv:2603.XXXXX},
   year    = {2026},
   url     = {https://github.com/Sredeemer/bix-bench-research}
