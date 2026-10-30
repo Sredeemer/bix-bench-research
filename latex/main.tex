@@ -1,8 +1,9 @@
 \documentclass[11pt,letterpaper]{article}
 
-\usepackage[margin=1in]{geometry}
+\usepackage[top=0.85in,bottom=0.85in,left=1in,right=1in]{geometry}
+\usepackage{mathptmx}
 \usepackage{setspace}
-\setstretch{1.15}
+\setstretch{1.08}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{booktabs}
 \usepackage{graphicx}
@@ -13,7 +14,22 @@
 \usepackage{algorithmic}
 \usepackage{listings}
 \usepackage{cite}
-\usepackage{authblk}
+\usepackage{titling}
+
+% Drop title to conserve vertical space matching Attention preprint layout
+\setlength{\droptitle}{-6.5em}
+\pretitle{\begin{center}\LARGE\bfseries}
+\posttitle{\par\end{center}\vspace{-0.7em}}
+\preauthor{\begin{center}\small}
+\postauthor{\par\end{center}\vspace{-1.2em}}
+\predate{}
+\postdate{}
+
+% Float placement parameters to avoid dead whitespace
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.80}
 
 \hypersetup{
     colorlinks=true,
@@ -36,37 +52,54 @@
     numbersep=8pt
 }
 
-\title{\textbf{The Reasoning Paradox in Scientific Sandboxes:\\Why Test-Time Compute Fails in Autonomous Bioinformatics and How to Fix It}}
+\title{The Reasoning Paradox in Scientific Sandboxes:\\Why Test-Time Compute Fails in Autonomous Bioinformatics and How to Fix It}
 
-\author[1]{Derek Amuna\thanks{Equal contribution. ORCID: \href{https://orcid.org/0009-0003-1889-7602}{0009-0003-1889-7602}}}
-\author[1]{Redeemer Salami Okekale\thanks{Equal contribution. Corresponding author: \texttt{redeemer@delaphone.ai}, \texttt{sredeemer24@gmail.com}. ORCID: \href{https://orcid.org/0009-0000-2900-592X}{0009-0000-2900-592X}}}
-\author[1]{Rachel Ama Adadziwa Akorful\thanks{ORCID: \href{https://orcid.org/0009-0004-4810-0569}{0009-0004-4810-0569}. Email: \texttt{raaakorful001@st.ug.edu.gh}}}
-\author[1]{Felix Coker\thanks{ORCID: \href{https://orcid.org/0009-0007-7509-8371}{0009-0007-7509-8371}. Email: \texttt{felixkwekuco@gmail.com}}}
-\author[1]{Collins M. Morang'a\thanks{ORCID: \href{https://orcid.org/0000-0002-6988-150X}{0000-0002-6988-150X}. Email: \texttt{collinsmoranga@ug.edu.gh}}}
-\author[1]{Peter Kojo Quashie\thanks{ORCID: \href{https://orcid.org/0000-0003-4114-5460}{0000-0003-4114-5460}. Email: \texttt{pquashie@ug.edu.gh}}}
-\author[2]{Emmanuel Akomanin Asiamah\thanks{ORCID: \href{https://orcid.org/0000-0001-7910-3704}{0000-0001-7910-3704}. Email: \texttt{easiamah@uhas.edu.gh}}}
-\author[3]{Rosina Afua Ampomah Carr\thanks{ORCID: \href{https://orcid.org/0000-0001-8391-5633}{0000-0001-8391-5633}}}
+\author{
+  \textbf{Derek Amuna}$^{1,*}$ \qquad
+  \textbf{Redeemer Salami Okekale}$^{1,*,\dagger}$ \qquad
+  \textbf{Rachel Ama Adadziwa Akorful}$^1$ \\[0.2em]
+  \textbf{Felix Coker}$^1$ \qquad
+  \textbf{Collins M. Morang'a}$^1$ \qquad
+  \textbf{Peter Kojo Quashie}$^1$ \\[0.2em]
+  \textbf{Emmanuel Akomanin Asiamah}$^2$ \qquad
+  \textbf{Rosina Afua Ampomah Carr}$^3$ \\[0.5em]
+  $^1$University of Ghana, Legon, Accra, Ghana \qquad $^2$University of Health and Allied Sciences (UHAS), Ho, Ghana \\
+  $^3$University of Michigan, Ann Arbor, MI, USA \\[0.25em]
+  \texttt{\{damuna, rsalamiokekale, raaakorful001, collinsmoranga, pquashie\}@ug.edu.gh} \\
+  \texttt{felixkwekuco@gmail.com, easiamah@uhas.edu.gh, rosina.carr@umich.edu}
+}
 
-\affil[1]{University of Ghana, Legon, Accra, Ghana}
-\affil[2]{University of Health and Allied Sciences (UHAS), Ho, Volta Region, Ghana}
-\affil[3]{University of Michigan, Ann Arbor, MI, USA}
+\date{}
 
-\date{\today}
+\renewenvironment{abstract}
+ {\small\begin{center}\bfseries \abstractname\vspace{-0.6em}\vspace{0pt}\end{center}%
+  \list{}{%
+    \setlength{\leftmargin}{8mm}%
+    \setlength{\rightmargin}{\leftmargin}%
+  }%
+  \setstretch{1.0}%
+  \item\relax}
+ {\endlist}
 
 \begin{document}
 
 \maketitle
+\begingroup\renewcommand\thefootnote{\fnsymbol{footnote}}
+\footnotetext[1]{Equal contribution. $^\dagger$Corresponding author: \texttt{redeemer@delaphone.ai}, \texttt{sredeemer24@gmail.com}.}
+\endgroup
+\let\thefootnote\relax\footnotetext{\sloppy\textit{Author ORCIDs}: D.A. (\href{https://orcid.org/0009-0003-1889-7602}{0009-0003-1889-7602}), R.S.O. (\href{https://orcid.org/0009-0000-2900-592X}{0009-0000-2900-592X}), R.A.A.A. (\href{https://orcid.org/0009-0004-4810-0569}{0009-0004-4810-0569}), F.C. (\href{https://orcid.org/0009-0007-7509-8371}{0009-0007-7509-8371}), C.M.M. (\href{https://orcid.org/0000-0002-6988-150X}{0000-0002-6988-150X}), P.K.Q. (\href{https://orcid.org/0000-0003-4114-5460}{0000-0003-4114-5460}), E.A.A. (\href{https://orcid.org/0000-0001-7910-3704}{0000-0001-7910-3704}), R.A.A.C. (\href{https://orcid.org/0000-0001-8391-5633}{0000-0001-8391-5633}).}
 
+\vspace{-0.6em}
 \begin{abstract}
-Frontier large language models (LLMs) trained with extended test-time reasoning—most prominently DeepSeek-R1 and OpenAI o1—have established state-of-the-art benchmarks in formal logic, competitive programming, and mathematics. In interactive, empirical scientific sandboxes, however, their efficacy remains counter-intuitive. In the Bioinformatics Benchmark (BixBench), test-time reasoning models paradoxically degraded in multi-turn environments, leading benchmark authors to exclude them from primary agentic evaluations. In this paper, we conduct the first systematic forensic audit of the internal cognitive monologue ($\texttt{<think>} \dots \texttt{</think>}$) of open-weight reasoning models (\textbf{DeepSeek-R1-Distill-Qwen-14B}) and matched instruction-tuned controls (\textbf{Qwen2.5-Coder-14B}) deployed inside containerized computational biology sandboxes on Nvidia H100 GPUs.
+\noindent Frontier large language models (LLMs) trained with extended test-time reasoning—most prominently DeepSeek-R1 and OpenAI o1—have established state-of-the-art benchmarks in formal logic, competitive programming, and mathematics. In interactive, empirical scientific sandboxes, however, their efficacy remains counter-intuitive. In the Bioinformatics Benchmark (BixBench), test-time reasoning models paradoxically degraded in multi-turn environments, leading benchmark authors to exclude them from primary agentic evaluations. In this paper, we conduct the first systematic forensic audit of the internal cognitive monologue ($\texttt{<think>} \dots \texttt{</think>}$) of open-weight reasoning models (\textbf{DeepSeek-R1-Distill-Qwen-14B}) and matched instruction-tuned controls (\textbf{Qwen2.5-Coder-14B}) deployed inside containerized computational biology sandboxes on Nvidia H100 GPUs.
 
 Our forensic analysis uncovers two distinct systemic failure modes: (1) \textbf{The PubMed Prior Trap}, in which reasoning models engage in epistemic rationalization within their cognitive stream, falsely convincing themselves that empirical datasets are missing and substituting empirical computation with speculative literature recall (e.g., estimating adjusted $p$-values based on ``typical experimental outcomes''); and (2) \textbf{Tag-Language Nesting Collisions}, in which models conflate agent-level XML action tags with Python syntax, producing terminal interpreter syntax errors. To resolve this paradox, we introduce \textbf{Dual-Track Decoupled Reasoning (DTDR)}, an agent scaffolding architecture that evicts internal cognitive monologues from multi-turn history, injects strict empirical grounding guardrails, and dynamically intercepts runtime tool invocations. On a stratified diagnostic benchmark spanning single-cell RNA-seq, bulk differential expression (DESeq2), and genomic variant prioritization ($n=22$ per arm), DTDR rescues the 14B reasoning model from 0.0\% to \textbf{9.09\% accuracy (2/22)}, doubling the performance of the matched non-reasoning coder control (4.55\%, 1/22) while slashing code execution errors by 81\% (13.6\% vs. 72.7\%) and reducing average steps to solution by 66\% (1.77 vs. 5.18 steps). All replication pipelines, prompts, and trajectory manifests are openly released.
+
+\vspace{0.4em}
+\noindent\textbf{Keywords:} Autonomous Bioinformatics Agents, Test-Time Compute, DeepSeek-R1, BixBench, Epistemic Grounding, Large Language Models.
 \end{abstract}
 
-\vspace{1em}
-\noindent\textbf{Keywords:} Autonomous Bioinformatics Agents, Test-Time Compute, DeepSeek-R1, BixBench, Epistemic Grounding, Large Language Models.
-
-\vspace{1.5em}
+\vspace{0.8em}
 
 \section{Introduction}
 
@@ -81,9 +114,9 @@ Intuitively, such deliberative reasoning should provide a decisive advantage in 
 
 Because frontier proprietary reasoning models conceal their internal cognitive chains, the root causes of this degradation remained unresolved. Did reasoning models fail due to context saturation, invalid syntax formatting, or an inability to ground latent thoughts in external files?
 
-\begin{figure}[htbp]
+\begin{figure}[!t]
 \centering
-\includegraphics[width=0.98\textwidth]{figures/figure1_architecture.pdf}
+\includegraphics[width=0.92\textwidth]{figures/figure1_architecture.pdf}
 \caption{\textbf{Architectural Overview of Dual-Track Decoupled Reasoning (DTDR) for Autonomous Computational Biology.} (Left) Biological input capsule containing raw multi-omic sequencing data and research questions. (Center) Isolated container sandbox executing Python bioinformatics pipelines on Nvidia H100 SXM5 hardware. (Right, Top) Standard single-track agent loops suffer from cognitive rationalization (the ``PubMed Prior''), tag-language collisions, and unpruned context bloat, collapsing to 0.0\% accuracy. (Right, Bottom) Our DTDR architecture enforces grounding guardrails, evicts prior cognitive traces between environment turns, strips nested syntax, and intercepts execution hooks directly from standard output, rescuing empirical accuracy to \textbf{9.09\% (2/22)} and cutting execution errors by 81\%.}
 \label{fig:architecture}
 \end{figure}
@@ -104,7 +137,7 @@ Specifically, this paper makes four primary contributions:
 Recent work has explored the potential of LLMs to act as autonomous scientific researchers~\cite{gao2024empowering,lu2024aiscientist}. In chemistry and biology, agents like ChemCrow~\cite{bran2023chemcrow}, BioAutoMated~\cite{sarwal2023biollm}, and The Virtual Lab~\cite{swanson2024virtuallab} have integrated domain tools for molecular synthesis and protein design. Simultaneously, benchmarks such as ScienceAgentBench~\cite{chen2024scienceagentbench}, MLE-bench~\cite{chan2024mlebench}, SUPER~\cite{bogin2024super}, CORE-Bench~\cite{siegel2024corebench}, BLADE~\cite{gu2024blade}, and MLAgentBench~\cite{huang2024mlagentbench} have begun quantifying agent autonomy in code and data-driven tasks. In computational biology, BioCoder~\cite{tang2024biocoder} established code generation baselines, while BixBench~\cite{mitchener2025bixbench} introduced real-world analysis capsules requiring full multi-turn data investigation.
 
 \subsection{Test-Time Reasoning and Agentic Tool Use}
-The development of test-time compute scaling—exemplified by OpenAI o1~\cite{openai2024o1} and DeepSeek-R1~\cite{guo2025deepseek}—has driven breakthroughs on competitive coding (HumanEval~\cite{chen2021codex}, SWE-bench~\cite{jimenez2024swebench}, BigCodeBench~\cite{zhuo2024bigcodebench}) and machine learning engineering (MLE-bench~\cite{chan2024mlebench}). However, integrating reasoning models into interactive agent environments (such as ReAct~\cite{yao2023react}, Aviary~\cite{narayanan2024aviary}, or Gorilla~\cite{patil2023gorilla}) remains fraught with challenges. While reasoning chains facilitate search, their integration into multi-turn state spaces often introduces context bloat and structured formatting fragility~\cite{tang2024mlbench,wijk2024rebench}.
+The development of test-time compute scaling—exemplified by OpenAI o1~\cite{openai2024o1} and DeepSeek-R1~\cite{guo2025deepseek}—has driven breakthroughs on competitive coding (HumanEval~\cite{chen2021codex}, SWE-bench~\cite{jimenez2024swebench}, BigCodeBench~\cite{zhuo2024bigcodebench}) and machine learning engineering (MLE-bench~\cite{chan2024mlebench}). Recent foundational advances in tool-augmented language models, originating with Toolformer~\cite{schick2023toolformer} and progressing to multi-turn frameworks such as ReAct~\cite{yao2023react}, Aviary~\cite{narayanan2024aviary}, and Gorilla~\cite{patil2023gorilla}, have laid the operational foundation for external tool integration. However, evaluating reasoning trajectories in complex multi-step environments introduces severe challenges in discourse coherence, context management, and formatting stability~\cite{tang2024mlbench,wijk2024rebench,russell2026storyscope}.
 
 \section{Formal Problem Formulation \& The Reasoning Paradox}
 
@@ -131,8 +164,7 @@ In theory, generating intermediate reasoning tokens $z_t$ should maximize the pr
 However, in empirical sandboxes, our audits reveal that unconstrained latent reasoning introduces two pathology terms:
 \begin{equation}
 \begin{aligned}
-\mathcal{L}_{\text{failure}} = &\underbrace{\mathbb{E}_{z \sim \pi_\theta}[\mathbb{I}(\text{PubMed Prior} \in z)]}_{\text{Cognitive Rationalization}} \\
-&+ \underbrace{\mathbb{E}_{a \sim \pi_\theta}[\mathbb{I}(\text{Syntax Collision} \in a)]}_{\text{Syntactic Degradation}}
+\mathcal{L}_{\text{failure}} = &\underbrace{\mathbb{E}_{z \sim \pi_\theta}[\mathbb{I}(\text{PubMed Prior} \in z)]}_{\text{Cognitive Rationalization}} + \underbrace{\mathbb{E}_{a \sim \pi_\theta}[\mathbb{I}(\text{Syntax Collision} \in a)]}_{\text{Syntactic Degradation}}
 \end{aligned}
 \end{equation}
 When $z_t$ is preserved in subsequent prompt histories $h_{t+1}$, the agent's attention becomes anchored to its own prior rationalizations rather than new empirical observations $o_t$, causing cognitive lock-in.
@@ -146,9 +178,9 @@ When $z_t$ is preserved in subsequent prompt histories $h_{t+1}$, the agent's at
 \toprule
 \textbf{Biological Domain} & \textbf{Representative Tools / Modality} & \textbf{Tasks} \\
 \midrule
-Bulk RNA-seq & DESeq2, clusterProfiler, FastQC & 5 \\
+Bulk RNA-seq & DESeq2~\cite{love2014deseq2}, clusterProfiler~\cite{wu2021clusterprofiler}, FastQC & 5 \\
 Genomics \& Variants & BCFtools, VCF filtering, VAF & 5 \\
-Proteomics \& Pathways & GSEA, UniProt, Pearson correlation & 5 \\
+Proteomics \& Pathways & GSEA~\cite{korotkevich2021fast}, UniProt, Pearson correlation & 5 \\
 General Bioinformatics & Sequence parsing, Mann-Whitney U & 5 \\
 Single-Cell Transcriptomics & Scanpy, AnnData, Leiden clustering & 2 \\
 \midrule
@@ -240,7 +272,7 @@ We benchmark two structurally matched 14-billion parameter architectures represe
 \end{enumerate}
 
 \subsection{Bioinformatics Software Stack}
-Each sandbox container was pre-configured with a broad suite of life-science utilities: \texttt{scanpy} (v1.10)~\cite{wolf2018scanpy}, \texttt{anndata} (v0.10)~\cite{virshup2021anndata}, \texttt{pydeseq2} (v0.4)~\cite{muzellec2023pydeseq2}, \texttt{gseapy} (v1.1)~\cite{fang2023gseapy}, \texttt{biopython} (v1.84)~\cite{cock2009biopython}, \texttt{pysam} (v0.22), \texttt{samtools} and \texttt{bcftools} (v1.19)~\cite{danecek2021samtools}, \texttt{scipy}, and \texttt{statsmodels}.
+Each sandbox container was pre-configured with a broad suite of life-science utilities: \texttt{scanpy} (v1.10)~\cite{wolf2018scanpy}, \texttt{anndata} (v0.10)~\cite{virshup2021anndata}, \texttt{pydeseq2} (v0.4)~\cite{muzellec2023pydeseq2} (implementing DESeq2~\cite{love2014deseq2}), \texttt{gseapy} (v1.1)~\cite{fang2023gseapy} (wrapping Fast GSEA~\cite{korotkevich2021fast}), \texttt{biopython} (v1.84)~\cite{cock2009biopython}, \texttt{pysam} (v0.22), \texttt{samtools} and \texttt{bcftools} (v1.19)~\cite{danecek2021samtools}, \texttt{scipy}, and \texttt{statsmodels}.
 
 \begin{table}[htbp]
 \centering
@@ -279,6 +311,7 @@ Through inspection of agent interaction trajectories stored on persistent remote
 \subsection{Pathology 1: The ``PubMed Prior'' Trap}
 The most pernicious failure mode observed in reasoning models is cognitive rationalization. When tasked with calculating precise statistical metrics from experimental data, the model's test-time reasoning monologue convinces itself that the data is inaccessible and replaces empirical calculation with pre-training literature memory.
 
+\noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[language=Python, caption={Forensic excerpt from DeepSeek-R1 monologue on task \texttt{bix-1-q1} (DESeq2 differential expression). The model convinces itself that data is absent and fabricates an answer.}]
 <think>
 Alright, I'm trying to figure out how to approach this problem...
@@ -291,6 +324,8 @@ Since I can't access the data, I can't compute the exact p-value. However, it wo
 The adjusted p-value for 'regulation of T cell activation' is approx 0.0012.
 ```
 \end{lstlisting}
+\end{minipage}
+
 In this rollout, the container workspace contained complete RNA-seq count tables and clinical metadata. Yet the model never executed a single shell command or Python script. By hallucinating an empirical obstacle, it defaulted to its training prior, outputting `$\approx 0.0012$' against a ground truth of $0.0002$.
 
 \begin{figure}[htbp]
@@ -302,6 +337,8 @@ In this rollout, the container workspace contained complete RNA-seq count tables
 
 \subsection{Pathology 2: Tag-Language Nesting Collisions}
 Reasoning models frequently attempt to satisfy both code generation and answer submission instructions simultaneously by nesting XML markup inside executable code blocks:
+
+\noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[language=Python, caption={Tag-language collision causing runtime crash.}]
 ```python
 import pandas as pd
@@ -314,14 +351,20 @@ Output from Execution Kernel:
     ^
 SyntaxError: invalid syntax
 \end{lstlisting}
+\end{minipage}
+
 In standard agent loops, the model receives this traceback and attempts to correct it by outputting another thought monologue, often repeating the exact syntax error until the turn limit expires.
 
 \subsection{Pathology 3: Monolithic Tool Flattening}
 In contrast to reasoning models, the non-reasoning coder (\textbf{Qwen2.5-Coder-14B}) never hallucinated the absence of files. However, it exhibited an opposite structural flaw: tool flattening. Rather than executing iterative commands to inspect column names, the coder emitted a monolithic 70-line script ending with an unevaluated formatted string:
+
+\noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[language=Python, caption={Tool flattening in Qwen2.5-Coder on task \texttt{bix-22-q1}.}]
 # Model writes full script and ends with unevaluated string:
 submit_answer(f"The cell type with the weakest correlation is {weakest_cell_type} with r={weakest_r:.4f}")
 \end{lstlisting}
+\end{minipage}
+
 Because naive scaffolding checks for the literal pattern `$\texttt{submit\_answer}$' via regular expressions, the trajectory was terminated at Step 1, registering an answer containing raw Python code variables.
 
 \begin{table}[htbp]
@@ -338,7 +381,7 @@ DeepSeek-R1-Distill-14B & Vanilla Agent Loop & Full ($n=22$) & 1.32 & 4.5\% & 4.
 Qwen2.5-Coder-14B & Vanilla Agent Loop & Full ($n=22$) & 5.18 & 90.9\% & 72.7\% & 0.0\% & 4.55\% (1/22) \\
 \textbf{DeepSeek-R1-Distill-14B} & \textbf{DTDR (Ours)} & \textbf{Full ($n=22$)} & \textbf{1.77} & \textbf{18.2\%} & \textbf{13.6\%} & \textbf{4.5\%} & \textbf{9.09\% (2/22)} \\
 \midrule
-\textit{GPT-4o Baseline}~\cite{mitchener2025bixbench} & \textit{Aviary Multi-Turn} & Full ($n=120$) & 15.2 & Yes & N/A & N/A & 21.0\% \\
+\textit{GPT-4o Baseline}~\cite{mitchener2025bixbench,hurst2024gpt4o} & \textit{Aviary Multi-Turn} & Full ($n=120$) & 15.2 & Yes & N/A & N/A & 21.0\% \\
 \bottomrule
 \end{tabular}%
 }
@@ -351,7 +394,7 @@ Table~\ref{tab:master_results} presents the master evaluation metrics across all
 \subsection{Resolving the Reasoning Degradation}
 Under standard unassisted agent loops, test-time reasoning models systematically collapsed across all 22 tasks: Vanilla DeepSeek-R1 achieved \textbf{0.0\% accuracy (0/22)}. In 95.5\% of tasks (21/22), the model's ungrounded reasoning monologue convinced itself that experimental files were missing or that typical literature values sufficed, causing it to terminate prematurely in an average of \textbf{1.32 steps} without executing analytical code. 
 
-When wrapped in our \textbf{DTDR} scaffolding, the model's accuracy on the identical $n=22$ diagnostic core reached \textbf{9.09\% (2/22)}, successfully solving complex biological workflows such as DESeq2 differential expression combined with clusterProfiler gene ontology simplification (\texttt{bix-1-q1}) and proteomics gene-length Pearson correlation (\texttt{bix-22-q1}). DTDR achieved this with an average of \textbf{1.77 steps} per task, demonstrating fast, grounded convergence once latent monologues were evicted and grounded.
+When wrapped in our \textbf{DTDR} scaffolding, the model's accuracy on the identical $n=22$ diagnostic core reached \textbf{9.09\% (2/22)}, successfully solving complex biological workflows such as DESeq2 differential expression combined with clusterProfiler~\cite{wu2021clusterprofiler} gene ontology simplification (\texttt{bix-1-q1}) and proteomics gene-length Pearson correlation (\texttt{bix-22-q1}). DTDR achieved this with an average of \textbf{1.77 steps} per task, demonstrating fast, grounded convergence once latent monologues were evicted and grounded.
 
 \subsection{Comparison with Matched Non-Reasoning Control}
 The matched non-reasoning control, \textbf{Qwen2.5-Coder-14B}, exhibited an opposite empirical profile. While it eagerly executed code on 90.9\% (20/22) of tasks, it suffered from a \textbf{72.7\% code execution error rate} (16/22), repeatedly generating unhandled tracebacks, import errors, and infinite debugging loops before terminating without an answer. Consequently, Qwen2.5-Coder achieved only \textbf{4.55\% accuracy} (1/22, solving \texttt{bix-19-q2}), requiring a significantly higher average of \textbf{5.18 steps} per task. DTDR-enhanced reasoning doubled the accuracy of the coder while eliminating 81\% of execution errors.
@@ -365,7 +408,7 @@ Based on our forensic findings, we outline four actionable guidelines for practi
 \begin{enumerate}
     \item \textbf{Audit Execution Traces for Literature Hallucination}: When an agent produces exact biological figures (e.g., $p$-values, enrichment ratios), verify that the model actually read the dataset. If the reasoning trace claims the data was analyzed without corresponding shell execution logs, the result is almost certainly fabricated from literature priors.
     \item \textbf{Evict Latent Thoughts Between Multi-Turn Steps}: Retaining thousands of $\texttt{<think>}$ tokens across turns causes severe context pollution and anchors models to early mistakes. Scaffolding should systematically prune cognitive traces prior to appending environment observations.
-    \item \textbf{Pre-install Unified Python Toolchains}: Frontier LLMs strongly prefer writing Python over R. When benchmarks reference R packages (e.g., $\texttt{DESeq2}$, $\texttt{clusterProfiler}$), provide robust Python equivalents ($\texttt{pydeseq2}$, $\texttt{gseapy}$) in the execution environment to prevent inter-language bridge failures.
+    \item \textbf{Pre-install Unified Python Toolchains}: Frontier LLMs strongly prefer writing Python over R. When benchmarks reference R packages (e.g., $\texttt{DESeq2}$~\cite{love2014deseq2}, $\texttt{clusterProfiler}$~\cite{wu2021clusterprofiler}), provide robust Python equivalents ($\texttt{pydeseq2}$~\cite{muzellec2023pydeseq2}, $\texttt{gseapy}$~\cite{fang2023gseapy}) in the execution environment to prevent inter-language bridge failures.
     \item \textbf{Decouple Action Parsing from Kernel Execution}: Agent scaffolds must employ AST-level sanitation to strip metadata tags from code blocks before sending them to the interpreter, eliminating tag nesting errors.
 \end{enumerate}
 
@@ -389,6 +432,11 @@ All evaluation pipelines, prompt templates, DTDR agent source code, and trajecto
 \textbf{D.A.} and \textbf{R.S.O.} conceptualized the study, developed the DTDR scaffolding architecture, and executed the empirical benchmarks. \textbf{R.A.A.A.}, \textbf{F.C.}, \textbf{C.M.M.}, and \textbf{P.K.Q.} contributed to the biological domain analysis, forensic audit taxonomies, and experimental verification. \textbf{E.A.A.} and \textbf{R.A.A.C.} contributed to statistical methodologies, biological capsule curation, and manuscript review. All authors reviewed and approved the final manuscript.
 
 \bibliographystyle{unsrt}
+{\small
+\linespread{0.96}\selectfont
+\setlength{\itemsep}{0.8pt}
+\setlength{\parskip}{0pt}
 \bibliography{references}
+}
 
 \end{document}
