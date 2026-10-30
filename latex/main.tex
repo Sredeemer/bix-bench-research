@@ -32,13 +32,9 @@
 \title{\textbf{The Reasoning Paradox in Scientific Sandboxes:\\Why Test-Time Compute Fails in Autonomous Bioinformatics and How to Fix It}}
 
 \author{
-  \textbf{Redeemer Salami-Okekale} \\
-  \texttt{redeemer@delaphone.ai} \\
-  \textit{Independent Research}
-  \and
-  \textbf{Antigravity AI} \\
-  \textit{Autonomous Systems Laboratory} \\
-  \texttt{research@deepmind.google}
+  \textbf{Derek Amuna}$^{1}$\thanks{Equal contribution. ORCID: \href{https://orcid.org/0009-0003-1889-7602}{0009-0003-1889-7602}} \qquad
+  \textbf{Redeemer Salami Okekale}$^{1,*}$\thanks{Corresponding author. ORCID: \href{https://orcid.org/0009-0000-2900-592X}{0009-0000-2900-592X}} \\[0.5em]
+  $^1$University of Ghana \\[0.3em]
 }
 
 \date{\today}
@@ -50,7 +46,7 @@
 \begin{abstract}
 Frontier large language models (LLMs) trained with extended test-time reasoning (such as DeepSeek-R1 and OpenAI o1) have established state-of-the-art results on benchmarks in formal logic, competitive programming, and mathematics. However, their efficacy within interactive, empirical scientific sandboxes remains counter-intuitive. In the recently published Bioinformatics Benchmark (BixBench), test-time reasoning models paradoxically degraded in multi-turn environments, leading benchmark authors to exclude them from primary agentic evaluations. In this paper, we conduct the first forensic audit of the internal cognitive monologue ($\texttt{<think>} \dots \texttt{</think>}$) of open-weight reasoning models (\textbf{DeepSeek-R1-Distill-Qwen-14B}) and matched instruction-tuned controls (\textbf{Qwen2.5-Coder-14B}) deployed inside an isolated containerized computational biology sandbox running on Nvidia H100 GPUs. 
 
-Our forensic analysis uncovers two distinct systemic failure modes: (1) \textbf{The PubMed Prior Trap}, in which reasoning models engage in epistemic rationalization within their cognitive stream, convincing themselves that empirical datasets are missing and substituting empirical computation with speculative literature recall (e.g., guessing adjusted $p$-values based on ``typical experimental outcomes''); and (2) \textbf{Tag-Language Nesting Collisions}, in which models conflate agent-level XML action tags with Python syntax, producing terminal interpreter syntax errors. To resolve this paradox, we introduce \textbf{Dual-Track Decoupled Reasoning (DTDR)}, an agent scaffolding architecture that evicts internal cognitive monologues from multi-turn history, injects strict empirical grounding guardrails, and dynamically intercepts runtime tool invocations. On a stratified diagnostic benchmark spanning single-cell RNA-seq, bulk differential expression (DESeq2), and genomic variant prioritization, DTDR rescues the 14B reasoning model from 0.0\% to \textbf{33.3\% accuracy}, outperforming both the standard non-reasoning coder (0.0\%) and establishing superiority over proprietary frontier baselines (GPT-4o at 21.0\%). All code, prompts, and trajectory manifests are openly released.
+Our forensic analysis uncovers two distinct systemic failure modes: (1) \textbf{The PubMed Prior Trap}, in which reasoning models engage in epistemic rationalization within their cognitive stream, convincing themselves that empirical datasets are missing and substituting empirical computation with speculative literature recall (e.g., guessing adjusted $p$-values based on ``typical experimental outcomes''); and (2) \textbf{Tag-Language Nesting Collisions}, in which models conflate agent-level XML action tags with Python syntax, producing terminal interpreter syntax errors. To resolve this paradox, we introduce \textbf{Dual-Track Decoupled Reasoning (DTDR)}, an agent scaffolding architecture that evicts internal cognitive monologues from multi-turn history, injects strict empirical grounding guardrails, and dynamically intercepts runtime tool invocations. On a stratified diagnostic benchmark spanning single-cell RNA-seq, bulk differential expression (DESeq2), and genomic variant prioritization ($n=22$ per arm), DTDR rescues the 14B reasoning model from 0.0\% to \textbf{9.09\% accuracy (2/22)}, doubling the performance of the matched non-reasoning coder control (4.55\%, 1/22) while slashing code execution errors by 81\% (13.6\% vs. 72.7\%) and reducing average steps by 66\% (1.77 vs. 5.18 steps). All code, prompts, and trajectory manifests are openly released.
 \end{abstract}
 
 \section{Introduction}
@@ -69,7 +65,7 @@ Because frontier proprietary reasoning models conceal their internal cognitive c
 \begin{figure*}[t]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/figure1_architecture.pdf}
-\caption{\textbf{Architectural Comparison of Agent Scaffolds in Autonomous Computational Biology.} (A) Standard single-track agent loops (e.g., ReAct, Aviary) suffer from cognitive rationalization (the ``PubMed Prior''), tag-language nesting collisions (XML inside Python code), and unpruned context bloat. (B) Our proposed \textbf{Dual-Track Decoupled Reasoning (DTDR)} architecture isolates the cognitive monologue, evicts prior thoughts between environment steps, strips nested syntax, and intercepts execution hooks directly from standard output, rescuing empirical accuracy from 0.0\% to 33.3\% on Nvidia H100 hardware.}
+\caption{\textbf{Architectural Comparison of Agent Scaffolds in Autonomous Computational Biology.} (Left) Biological input capsule containing raw multi-omic sequencing data and research questions. (Center) Isolated container sandbox executing Python bioinformatics pipelines on Nvidia H100 SXM5 hardware. (Right, Top) Standard single-track agent loops suffer from cognitive rationalization (the ``PubMed Prior''), tag-language collisions, and unpruned context bloat, collapsing to 0.0\% accuracy. (Right, Bottom) Our \textbf{Dual-Track Decoupled Reasoning (DTDR)} architecture enforces grounding guardrails, evicts prior cognitive traces between environment turns, strips nested syntax, and intercepts execution hooks directly from standard output, rescuing empirical accuracy to \textbf{9.09\% (2/22)} and cutting execution errors by 81\%.}
 \label{fig:architecture}
 \end{figure*}
 
@@ -80,7 +76,7 @@ Specifically, this paper makes four primary contributions:
     \item \textbf{First Forensic Audit of Reasoning in Biology Sandboxes}: We capture and analyze the complete cognitive streams ($\texttt{<think>} \dots \texttt{</think>}$) of open-weight models across real biological datasets, identifying the precise mechanisms of failure.
     \item \textbf{Discovery of the ``PubMed Prior''}: We characterize a cognitive failure mode wherein reasoning models convince themselves that workspace files are missing and hallucinate statistical figures from pre-training literature memory.
     \item \textbf{Dual-Track Decoupled Reasoning (DTDR)}: We introduce a general scaffolding architecture that decouples cognitive planning from tool execution, evicts internal monologues across environment turns, and eliminates syntactic nesting collisions.
-    \item \textbf{Empirical Validation on Nvidia H100}: On a stratified diagnostic benchmark spanning single-cell RNA-seq, bulk differential gene expression, and variant filtering, DTDR achieves \textbf{33.3\% accuracy}, outperforming matched non-reasoning coders (0.0\%) and surpassing the reported baseline of GPT-4o (21.0\%) on identical tasks.
+    \item \textbf{Empirical Validation on Nvidia H100}: On a stratified diagnostic benchmark spanning single-cell RNA-seq, bulk differential gene expression, and variant filtering ($n=22$ per arm), DTDR achieves \textbf{9.09\% accuracy (2/22)}, doubling the matched non-reasoning coder (4.55\%, 1/22) while unassisted reasoning models collapse to 0.0\%.
 \end{enumerate}
 
 \section{Formal Problem Formulation \& The Reasoning Paradox}
@@ -108,7 +104,10 @@ In theory, generating intermediate reasoning tokens $z_t$ should maximize the pr
 \end{equation}
 However, in empirical sandboxes, our audits reveal that unconstrained latent reasoning introduces two pathology terms:
 \begin{equation}
-\mathcal{L}_{\text{failure}} = \underbrace{\mathbb{E}_{z \sim \pi_\theta}[\mathbb{I}(\text{PubMed Prior} \in z)]}_{\text{Cognitive Rationalization}} + \underbrace{\mathbb{E}_{a \sim \pi_\theta}[\mathbb{I}(\text{Syntax Collision} \in a)]}_{\text{Syntactic Degradation}}
+\begin{aligned}
+\mathcal{L}_{\text{failure}} = &\underbrace{\mathbb{E}_{z \sim \pi_\theta}[\mathbb{I}(\text{PubMed Prior} \in z)]}_{\text{Cognitive Rationalization}} \\
+&+ \underbrace{\mathbb{E}_{a \sim \pi_\theta}[\mathbb{I}(\text{Syntax Collision} \in a)]}_{\text{Syntactic Degradation}}
+\end{aligned}
 \end{equation}
 When $z_t$ is preserved in subsequent prompt histories $h_{t+1}$, the agent's attention becomes anchored to its own prior rationalizations rather than new empirical observations $o_t$, causing cognitive lock-in.
 
@@ -117,6 +116,7 @@ When $z_t$ is preserved in subsequent prompt histories $h_{t+1}$, the agent's at
 \small
 \caption{\textbf{Stratified BixBench Diagnostic Core Composition.} Tasks were selected from the official benchmark across 14 biological capsules to evaluate distinct analytical pipelines.}
 \label{tab:diagnostic_core}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{llr}
 \toprule
 \textbf{Biological Domain} & \textbf{Representative Tools / Modality} & \textbf{Tasks} \\
@@ -129,7 +129,8 @@ Single-Cell Transcriptomics & Scanpy, AnnData, Leiden clustering & 2 \\
 \midrule
 \textbf{Total Diagnostic Core} & \textbf{Stratified Multimodal Biology} & \textbf{22} \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \section{Methodology: Dual-Track Decoupled Reasoning (DTDR)}
@@ -222,6 +223,7 @@ Each sandbox container was pre-configured with a comprehensive suite of life-sci
 \small
 \caption{\textbf{System and Model Hyperparameters on Nvidia H100.}}
 \label{tab:hyperparams}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{llr}
 \toprule
 \textbf{Component} & \textbf{Parameter} & \textbf{Value} \\
@@ -235,9 +237,10 @@ Sampling & Temperature ($T$) & 0.60 \\
 & Max Generation Tokens & 2,048 tokens \\
 Sandbox & Turn Timeout & 600 seconds \\
 & Memory Limit & 64 GB RAM \\
-& Isolated Sandbox Environment & Ephemeral Container Sandbox \\
+& Isolated Sandbox Environment & Container Sandbox \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \begin{figure}[t]
@@ -271,7 +274,7 @@ In this rollout, the container workspace contained complete RNA-seq count tables
 \begin{figure*}[t]
 \centering
 \includegraphics[width=0.92\textwidth]{figures/figure3_forensic_taxonomy.pdf}
-\caption{\textbf{Forensic Diagnostic Breakdown across Evaluated Trajectories.} (A) Distribution of primary failure modes in unassisted agent loops. The ``PubMed Prior'' and tag-language nesting collisions account for 75\% of all failures. (B) Step execution efficiency across scaffold configurations. Vanilla reasoning loops timeout in cyclic formatting loops (10 steps), while DTDR converges to grounded solutions in an average of 2 steps.}
+\caption{\textbf{Forensic Diagnostic Breakdown across Evaluated Trajectories ($n=22$ per arm).} (A) Observed rates of critical agent pathologies in containerized bioinformatics sandboxes: the ``PubMed Prior'' accounts for 95.5\% of failures in ungrounded reasoning models (21/22 tasks), while matched coder models suffer from 72.7\% code execution error trapping (16/22 tasks). DTDR slashes execution errors to 13.6\% (an 81\% relative reduction). (B) Execution step efficiency across architectures. Vanilla reasoning models exit prematurely (1.32 mean steps) due to ungrounded guessing, while vanilla coders average 5.18 steps trapped in cyclic debugging loops. DTDR reasoning converges to grounded solutions in an average of 1.77 steps.}
 \label{fig:forensics}
 \end{figure*}
 
@@ -304,6 +307,7 @@ Because naive scaffolding checks for the literal pattern `$\texttt{submit\_answe
 \small
 \caption{\textbf{Master Empirical Results on BixBench Diagnostic Core ($n=22$ Per Arm, Nvidia H100 SXM5).}}
 \label{tab:master_results}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{llcccccr}
 \toprule
 \textbf{Model Architecture} & \textbf{Scaffolding Mode} & \textbf{Tasks ($n$)} & \textbf{Mean Steps} & \textbf{Code Executed} & \textbf{Code Errors} & \textbf{PubMed Prior} & \textbf{Accuracy} \\
@@ -314,7 +318,8 @@ Qwen2.5-Coder-14B & Vanilla Agent Loop & Full ($n=22$) & 5.18 & 90.9\% & 72.7\% 
 \midrule
 \textit{GPT-4o Baseline}~\cite{mitchener2025bixbench} & \textit{Aviary Multi-Turn} & Full ($n=120$) & 15.2 & Yes & N/A & N/A & 21.0\% \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table*}
 
 \section{Quantitative Results}

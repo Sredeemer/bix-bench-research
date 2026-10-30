@@ -1,144 +1,170 @@
 """
 Publication Figure Generator for:
 "The Reasoning Paradox in Scientific Sandboxes: Why Test-Time Compute Fails in Autonomous Bioinformatics and How to Fix It"
-Generates publication-quality PDF and high-res PNG figures.
+
+Adheres to research paper visualization guidelines:
+- Colorblind-safe palettes (Okabe-Ito / Wong 2011 Nature Methods)
+- High typographical legibility with adequate vertical and horizontal whitespace
+- Redundant encodings (color + shape/hatch)
+- Publication-quality 300 DPI vector PDF and high-res PNG outputs
 """
 
 import os
+from pathlib import Path
+from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sns
-from matplotlib.patches import FancyBboxPatch, Arrow
 
-# Set style
-plt.style.use('seaborn-v0_8-whitegrid')
-plt.rcParams['font.sans-serif'] = 'Helvetica, Arial, DejaVu Sans'
+# Set global matplotlib publication typography & styling
+plt.rcParams['font.sans-serif'] = ['Helvetica', 'Arial', 'DejaVu Sans']
 plt.rcParams['font.family'] = 'sans-serif'
-plt.rcParams['figure.autolayout'] = True
-plt.rcParams['axes.edgecolor'] = '#333333'
-plt.rcParams['axes.linewidth'] = 0.8
+plt.rcParams['figure.autolayout'] = False
+plt.rcParams['axes.edgecolor'] = '#2b2b2b'
+plt.rcParams['axes.linewidth'] = 0.9
+plt.rcParams['grid.color'] = '#e0e0e0'
+plt.rcParams['grid.linestyle'] = '--'
+plt.rcParams['grid.linewidth'] = 0.6
 
-from pathlib import Path
-
-# Set output directory relative to repo root
 REPO_ROOT = Path(__file__).resolve().parent.parent
 FIGURES_DIR = REPO_ROOT / "figures"
 LATEX_FIG_DIR = REPO_ROOT / "latex" / "figures"
+ARTIFACT_FIG_DIR = Path("/Users/redeemersalamiokekale/.gemini/antigravity/brain/32b9dfbf-d404-48c3-a4c2-519c881c689f/figures")
 
-DIRS = [FIGURES_DIR, LATEX_FIG_DIR]
+OUTPUT_DIRS = [FIGURES_DIR, LATEX_FIG_DIR]
+if ARTIFACT_FIG_DIR.parent.exists():
+    OUTPUT_DIRS.append(ARTIFACT_FIG_DIR)
+
 
 def save_fig(fig, name):
-    for d in DIRS:
+    for d in OUTPUT_DIRS:
         d.mkdir(parents=True, exist_ok=True)
         pdf_path = d / f"{name}.pdf"
         png_path = d / f"{name}.png"
         fig.savefig(pdf_path, dpi=300, bbox_inches='tight')
         fig.savefig(png_path, dpi=300, bbox_inches='tight')
-    print(f"Saved {name} to {DIRS}")
+    print(f"[✓] Saved {name} (PDF & PNG) to target directories.")
 
 
 # -----------------------------------------------------------------------------
-# Figure 1: Architectural Comparison: Standard ReAct vs. Dual-Track Decoupled Reasoning (DTDR)
+# Figure 1: BioRender System Architecture
 # -----------------------------------------------------------------------------
-def plot_figure_1():
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 5.5), gridspec_kw={'width_ratios': [1, 1]})
+def process_figure_1():
+    """
+    Integrates the BioRender publication diagram into Figure 1.
+    Converts and saves at 300 DPI vector PDF and PNG.
+    """
+    biorender_src = REPO_ROOT / "biorender.png"
+    if not biorender_src.exists():
+        print(f"[!] Warning: {biorender_src} not found.")
+        return
 
-    # Panel A: Standard ReAct / Monolithic Failure
-    ax1.set_xlim(0, 10)
-    ax1.set_ylim(0, 10)
-    ax1.axis('off')
-    ax1.set_title("A. Standard Single-Track Agent Loop (Failure Path)", fontsize=13, fontweight='bold', pad=15, loc='left')
+    img = Image.open(biorender_src).convert("RGB")
+    
+    # Save to all directories
+    for d in OUTPUT_DIRS:
+        d.mkdir(parents=True, exist_ok=True)
+        # Direct high-res PNG copy
+        png_dest = d / "figure1_architecture.png"
+        img.save(png_dest, format="PNG", dpi=(300, 300))
+        
+        # Vector PDF wrapper
+        pdf_dest = d / "figure1_architecture.pdf"
+        img.save(pdf_dest, format="PDF", resolution=300.0)
 
-    # Boxes for Panel A
-    p_box = FancyBboxPatch((1, 8.2), 8, 1.2, boxstyle="round,pad=0.2", ec="#721c24", fc="#f8d7da", lw=1.5)
-    ax1.add_patch(p_box)
-    ax1.text(5, 8.8, "Input Prompt (Bioinformatics Task + Workspace)", ha='center', va='center', fontsize=10, fontweight='bold', color="#721c24")
-
-    t_box = FancyBboxPatch((1, 5.4), 8, 1.8, boxstyle="round,pad=0.2", ec="#856404", fc="#fff3cd", lw=1.5)
-    ax1.add_patch(t_box)
-    ax1.text(5, 6.7, "Cognitive Monologue (<think> ... </think>)", ha='center', va='center', fontsize=10, fontweight='bold', color="#856404")
-    ax1.text(5, 5.9, "• Falsely infers data is inaccessible ('PubMed Prior')\n• Fabricates literature-based statistical values", ha='center', va='center', fontsize=8.5, color="#533f03")
-
-    f_box = FancyBboxPatch((1, 1.8), 8, 2.2, boxstyle="round,pad=0.2", ec="#dc3545", fc="#f5c6cb", lw=1.8)
-    ax1.add_patch(f_box)
-    ax1.text(5, 3.4, "Catastrophic Failure Modes", ha='center', va='center', fontsize=10.5, fontweight='bold', color="#721c24")
-    ax1.text(5, 2.4, "1. Tag Collision: XML tags nested in Python (SyntaxError)\n2. Tool Flattening: Coder outputs unevaluated f-strings\n3. Memory Bloat: Unpruned monologue triggers context overflow", ha='center', va='center', fontsize=8.5, color="#721c24")
-
-    # Arrows for Panel A
-    ax1.annotate('', xy=(5, 7.3), xytext=(5, 8.2), arrowprops=dict(arrowstyle="->", lw=2, color="#721c24"))
-    ax1.annotate('', xy=(5, 4.1), xytext=(5, 5.4), arrowprops=dict(arrowstyle="->", lw=2, color="#dc3545"))
-
-    # Panel B: Dual-Track Decoupled Reasoning (DTDR - Ours)
-    ax2.set_xlim(0, 10)
-    ax2.set_ylim(0, 10)
-    ax2.axis('off')
-    ax2.set_title("B. Dual-Track Decoupled Reasoning (DTDR - Ours)", fontsize=13, fontweight='bold', pad=15, loc='left')
-
-    bp_box = FancyBboxPatch((1, 8.2), 8, 1.2, boxstyle="round,pad=0.2", ec="#155724", fc="#d4edda", lw=1.5)
-    ax2.add_patch(bp_box)
-    ax2.text(5, 8.8, "Input Prompt + Strict Grounding Guardrail", ha='center', va='center', fontsize=10, fontweight='bold', color="#155724")
-
-    bt_box = FancyBboxPatch((1, 6.0), 8, 1.4, boxstyle="round,pad=0.2", ec="#0c5460", fc="#d1ecf1", lw=1.5)
-    ax2.add_patch(bt_box)
-    ax2.text(5, 6.9, "Dual-Track Cognitive Isolation", ha='center', va='center', fontsize=10, fontweight='bold', color="#0c5460")
-    ax2.text(5, 6.3, "Step 1: Test-time reasoning formulates data inspection plan\nStep 2: <think> tokens evicted from multi-turn agent history", ha='center', va='center', fontsize=8.5, color="#0c5460")
-
-    be_box = FancyBboxPatch((1, 3.8), 8, 1.4, boxstyle="round,pad=0.2", ec="#004085", fc="#cce5ff", lw=1.5)
-    ax2.add_patch(be_box)
-    ax2.text(5, 4.7, "AST/Regex Decoupled Tool Engine", ha='center', va='center', fontsize=10, fontweight='bold', color="#004085")
-    ax2.text(5, 4.1, "Strips nested tags; routes code to Python bioinformatics kernel\nIntercepts submit_answer() runtime hooks directly from stdout", ha='center', va='center', fontsize=8.5, color="#004085")
-
-    bs_box = FancyBboxPatch((1, 1.4), 8, 1.6, boxstyle="round,pad=0.2", ec="#28a745", fc="#28a745", lw=2)
-    ax2.add_patch(bs_box)
-    ax2.text(5, 2.3, "Verified Empirical Computation", ha='center', va='center', fontsize=11, fontweight='bold', color="white")
-    ax2.text(5, 1.7, "• Solves DESeq2 / GO enrichment in 2 steps (31 sec)\n• 9.1% Verified Accuracy on n=22 Diagnostic Core (2x Coder)", ha='center', va='center', fontsize=9, color="white")
-
-    # Arrows for Panel B
-    ax2.annotate('', xy=(5, 7.5), xytext=(5, 8.2), arrowprops=dict(arrowstyle="->", lw=2, color="#155724"))
-    ax2.annotate('', xy=(5, 5.3), xytext=(5, 6.0), arrowprops=dict(arrowstyle="->", lw=2, color="#0c5460"))
-    ax2.annotate('', xy=(5, 3.1), xytext=(5, 3.8), arrowprops=dict(arrowstyle="->", lw=2, color="#004085"))
-
-    plt.tight_layout()
-    save_fig(fig, "figure1_architecture")
-    plt.close()
+    print(f"[✓] Figure 1 BioRender successfully processed into PDF and PNG.")
 
 
 # -----------------------------------------------------------------------------
-# Figure 2: Empirical Performance Across Models on BixBench Diagnostic Tasks
+# Figure 2: Benchmark Accuracy (Okabe-Ito Colorblind-Safe Palette)
 # -----------------------------------------------------------------------------
 def plot_figure_2():
-    fig, ax = plt.subplots(figsize=(8.5, 5))
+    """
+    Figure 2: Empirical accuracy on BixBench Diagnostic Core (n=22 per arm).
+    Uses Okabe-Ito colorblind palette:
+      - Vanilla R1: Vermilion (#D55E00)
+      - Vanilla Coder: Deep Blue (#0072B2)
+      - DTDR R1: Bluish Green (#009E73)
+      - GPT-4o: Charcoal Slate (#4A4A4A)
+    """
+    fig, ax = plt.subplots(figsize=(8.5, 5.2), dpi=300)
 
     models = [
-        "DeepSeek-R1-Distill-14B\n(Vanilla, n=22)",
-        "Qwen 2.5 Coder 14B\n(Vanilla, n=22)",
-        "DeepSeek-R1-Distill-14B\n+ DTDR (Ours, n=22)",
+        "Vanilla R1-14B\n(n=22)",
+        "Vanilla Coder-14B\n(n=22)",
+        "DeepSeek-R1 + DTDR\n(Ours, n=22)",
         "GPT-4o Baseline\n(Mitchener et al., 2025)"
     ]
     accuracies = [0.0, 4.55, 9.09, 21.0]
-    colors = ['#dc3545', '#ffc107', '#28a745', '#6c757d']
 
-    bars = ax.bar(models, accuracies, color=colors, width=0.55, edgecolor='#222222', linewidth=1.2, zorder=3)
+    # Okabe-Ito colors with distinct luminance and saturation
+    colors = ['#D55E00', '#0072B2', '#009E73', '#4A4A4A']
+    hatches = ['//', '', '', '..']
 
-    # Add data labels
-    for bar in bars:
+    bars = ax.bar(
+        models,
+        accuracies,
+        color=colors,
+        width=0.52,
+        edgecolor='#1a1a1a',
+        linewidth=1.2,
+        zorder=3,
+        hatch=hatches
+    )
+
+    # Reference threshold for GPT-4o
+    ax.axhline(y=21.0, color='#4A4A4A', linestyle='--', linewidth=1.3, alpha=0.8, zorder=2)
+    ax.text(
+        0.05, 21.6,
+        "Reported GPT-4o Multi-Turn Baseline (21.0%)",
+        color='#333333',
+        fontsize=9.5,
+        fontweight='semibold',
+        style='italic'
+    )
+
+    # Value labels above bars with clean vertical clearance
+    labels = ["0.0%\n(0/22)", "4.55%\n(1/22)", "9.09%\n(2/22)", "21.0%\n(Ref)"]
+    for bar, label in zip(bars, labels):
         h = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width() / 2, h + 0.8, f"{h:.1f}%", ha='center', va='bottom', fontsize=12, fontweight='bold', color='#111111')
+        y_pos = h + 0.7 if h > 0 else 0.7
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            y_pos,
+            label,
+            ha='center',
+            va='bottom',
+            fontsize=10.5,
+            fontweight='bold',
+            color='#1a1a1a',
+            linespacing=1.1
+        )
 
-    # Reference line for GPT-4o
-    ax.axhline(y=21.0, color='#6c757d', linestyle='--', linewidth=1.2, alpha=0.7, zorder=2)
-    ax.text(0.1, 22.0, "GPT-4o Reference Level on BixBench Open-Answer (21.0%)", color='#555555', fontsize=9.5, fontstyle='italic')
+    # Highlight Callout for DTDR: Arrow points to left shoulder of bar to avoid intersecting text
+    ax.annotate(
+        "DTDR Rescues Reasoning\n(2x Coder Accuracy, 0.0% to 9.1%)",
+        xy=(1.75, 7.0),
+        xytext=(1.1, 15.0),
+        arrowprops=dict(
+            arrowstyle="->",
+            lw=2.0,
+            color="#009E73",
+            shrinkA=0,
+            shrinkB=4
+        ),
+        fontsize=10,
+        fontweight='bold',
+        color='#006d50',
+        ha='center',
+        bbox=dict(boxstyle="round,pad=0.45", fc="#E8F6F1", ec="#009E73", lw=1.2)
+    )
 
-    ax.set_ylabel("Diagnostic Task Accuracy (%)", fontsize=12, fontweight='bold', labelpad=10)
-    ax.set_title("Autonomous Bioinformatics Accuracy across Models (BixBench Core, H100)", fontsize=13, fontweight='bold', pad=15)
+    ax.set_ylabel("Diagnostic Core Accuracy (%)", fontsize=11.5, fontweight='bold', labelpad=10)
+    ax.set_title("Autonomous Task Performance on BixBench Diagnostic Core (n=22, H100)", fontsize=12.5, fontweight='bold', pad=16)
     ax.set_ylim(0, 26)
-    ax.grid(axis='y', linestyle=':', alpha=0.6, zorder=1)
-
-    # Highlight box for DTDR
-    ax.annotate('DTDR Recovers Reasoning\n(2x Non-Reasoning Coder)', 
-                xy=(2, 9.8), xytext=(1.2, 14.5),
-                arrowprops=dict(facecolor='#28a745', shrink=0.08, width=1.5, headwidth=8),
-                fontsize=10.5, fontweight='bold', color='#1e7e34')
+    ax.tick_params(axis='x', labelsize=10)
+    ax.tick_params(axis='y', labelsize=10)
+    ax.grid(axis='y', linestyle='--', alpha=0.6, zorder=1)
+    ax.set_axisbelow(True)
 
     plt.tight_layout()
     save_fig(fig, "figure2_accuracy_benchmark")
@@ -146,51 +172,120 @@ def plot_figure_2():
 
 
 # -----------------------------------------------------------------------------
-# Figure 3: Forensic Diagnostic Taxonomy & Trajectory Pathology Breakdown
+# Figure 3: Forensic Pathology Breakdown & Step Efficiency (Colorblind-Safe)
 # -----------------------------------------------------------------------------
 def plot_figure_3():
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+    """
+    Figure 3: Forensic Diagnostic Breakdown across Evaluated Trajectories.
+    Panel A: Pathology rates across models (Okabe-Ito palette, clean vertical spacing).
+    Panel B: Step efficiency (mean steps to termination with generous headroom).
+    """
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12.8, 5.2), dpi=300, gridspec_kw={'width_ratios': [1.15, 0.85]})
 
-    # Panel A: Execution Code Errors in Multi-Turn Sandboxes
-    modes = [
-        "Vanilla Coder Execution Error Rate\n(16/22 tasks trapped in bugs)",
-        "DTDR Reasoning Execution Error Rate\n(3/22 tasks with errors)",
-        "Vanilla R1 Empirical Grounding Rate\n(1/22 tasks executed code; 95% guessed)"
+    # ------------------ PANEL A: Pathologies ------------------
+    pathologies = [
+        "PubMed Prior Hallucination\n(Vanilla R1: Speculative Guess in Step 1)",
+        "Code Execution Bug Trapping\n(Vanilla Coder: Crashes & Infinite Loops)",
+        "Residual Execution Errors\n(DTDR Reasoning: 81% Error Reduction)"
     ]
-    frequencies = [72.7, 13.6, 4.5]
-    bar_colors = ['#d9534f', '#5cb85c', '#d9534f']
+    rates = [95.5, 72.7, 13.6]
+    counts = ["21/22 tasks", "16/22 tasks", "3/22 tasks"]
+    
+    # Okabe-Ito colors: Vermilion, Deep Blue, Bluish Green
+    colors_a = ['#D55E00', '#0072B2', '#009E73']
+    hatches_a = ['//', '', '..']
 
-    y_pos = np.arange(len(modes))
-    ax1.barh(y_pos, frequencies, color=bar_colors, edgecolor='#333333', linewidth=1.0, zorder=3)
+    y_pos = np.arange(len(pathologies))
+    bars1 = ax1.barh(
+        y_pos,
+        rates,
+        color=colors_a,
+        height=0.52,
+        edgecolor='#1a1a1a',
+        linewidth=1.1,
+        zorder=3,
+        hatch=hatches_a
+    )
+
     ax1.set_yticks(y_pos)
-    ax1.set_yticklabels(modes, fontsize=9.5, fontweight='bold')
-    ax1.invert_yaxis()
-    ax1.set_xlabel("Observed Frequency across n=22 Tasks (%)", fontsize=11, fontweight='bold', labelpad=8)
-    ax1.set_title("A. Pathology Breakdown across n=22 Sweeps", fontsize=12, fontweight='bold', loc='left')
-    ax1.set_xlim(0, 100)
-    ax1.grid(axis='x', linestyle=':', alpha=0.6, zorder=1)
+    ax1.set_yticklabels(pathologies, fontsize=9.5, fontweight='bold', linespacing=1.2)
+    ax1.invert_yaxis()  # Top-down order
+    ax1.set_xlabel("Observed Frequency across n=22 Tasks (%)", fontsize=11, fontweight='bold', labelpad=9)
+    ax1.set_title("A. Forensic Pathology Rates across 14B Agent Sandboxes", fontsize=11.5, fontweight='bold', loc='left', pad=12)
+    ax1.set_xlim(0, 108)
+    ax1.tick_params(axis='x', labelsize=10)
+    ax1.grid(axis='x', linestyle='--', alpha=0.6, zorder=1)
+    ax1.set_axisbelow(True)
 
-    for i, v in enumerate(frequencies):
-        ax1.text(v + 1.5, i, f"{v:.1f}%", va='center', fontsize=10, fontweight='bold', color='#222222')
+    # Clean label placement with percentage and task fraction
+    for i, (v, c) in enumerate(zip(rates, counts)):
+        ax1.text(
+            v + 1.8,
+            i,
+            f"{v:.1f}%  ({c})",
+            va='center',
+            fontsize=10,
+            fontweight='bold',
+            color='#1a1a1a'
+        )
 
-    # Panel B: Trajectory Efficiency (Average Steps to Terminate)
-    conditions = ["Vanilla R1\n(Premature Guess)", "Vanilla Coder\n(Error Trapping)", "DTDR R1\n(Decoupled Grounding)"]
+    # ------------------ PANEL B: Step Efficiency ------------------
+    conditions = [
+        "Vanilla R1\n(Premature Exit)",
+        "Vanilla Coder\n(Error Trapping)",
+        "DTDR Reasoning\n(Grounded)"
+    ]
     steps = [1.32, 5.18, 1.77]
-    palette = ['#e74c3c', '#e67e22', '#27ae60']
+    colors_b = ['#D55E00', '#0072B2', '#009E73']
+    hatches_b = ['//', '', '..']
 
-    bars2 = ax2.bar(conditions, steps, color=palette, width=0.45, edgecolor='#333333', linewidth=1.0, zorder=3)
-    ax2.set_ylabel("Mean Steps per Trajectory", fontsize=11, fontweight='bold', labelpad=8)
-    ax2.set_title("B. Mean Execution Steps across n=22 Tasks", fontsize=12, fontweight='bold', loc='left')
-    ax2.set_ylim(0, 10)
-    ax2.grid(axis='y', linestyle=':', alpha=0.6, zorder=1)
+    bars2 = ax2.bar(
+        conditions,
+        steps,
+        color=colors_b,
+        width=0.48,
+        edgecolor='#1a1a1a',
+        linewidth=1.1,
+        zorder=3,
+        hatch=hatches_b
+    )
 
-    for bar in bars2:
+    ax2.set_ylabel("Mean Steps per Trajectory", fontsize=11, fontweight='bold', labelpad=9)
+    ax2.set_title("B. Trajectory Steps to Termination (n=22)", fontsize=11.5, fontweight='bold', loc='left', pad=12)
+    # Generous vertical headroom to prevent crowding at the top
+    ax2.set_ylim(0, 8.0)
+    ax2.tick_params(axis='x', labelsize=9.5)
+    ax2.tick_params(axis='y', labelsize=10)
+    ax2.grid(axis='y', linestyle='--', alpha=0.6, zorder=1)
+    ax2.set_axisbelow(True)
+
+    # Multi-line, well-spaced annotations above each bar
+    subtitles = ["Premature Guess\n(No Code)", "Trapped in Loops\n(Tracebacks)", "Fast Grounded\nConvergence"]
+    for bar, val, sub in zip(bars2, steps, subtitles):
         h = bar.get_height()
-        ax2.text(bar.get_x() + bar.get_width() / 2, h + 0.3, f"{h:.2f}", ha='center', va='bottom', fontsize=11, fontweight='bold')
-
-    ax2.text(0, 2.0, "Guesses in step 1", ha='center', fontsize=9, color='#c0392b', fontstyle='italic')
-    ax2.text(1, 5.8, "Trapped in code bugs", ha='center', fontsize=9, color='#d35400', fontstyle='italic')
-    ax2.text(2, 2.4, "Fast convergence", ha='center', fontsize=9, color='#1e8449', fontweight='bold')
+        # Bold number directly above bar with 0.3 offset
+        ax2.text(
+            bar.get_x() + bar.get_width() / 2,
+            h + 0.30,
+            f"{val:.2f}",
+            ha='center',
+            va='bottom',
+            fontsize=11,
+            fontweight='bold',
+            color='#1a1a1a'
+        )
+        # Explanatory subtitle with clear vertical separation (0.95 offset above bar)
+        ax2.text(
+            bar.get_x() + bar.get_width() / 2,
+            h + 0.95,
+            sub,
+            ha='center',
+            va='bottom',
+            fontsize=8.5,
+            color='#444444',
+            linespacing=1.1,
+            style='italic'
+        )
 
     plt.tight_layout()
     save_fig(fig, "figure3_forensic_taxonomy")
@@ -198,8 +293,7 @@ def plot_figure_3():
 
 
 if __name__ == "__main__":
-    plot_figure_1()
+    process_figure_1()
     plot_figure_2()
     plot_figure_3()
-    print("All publication figures successfully created!")
-
+    print("\n[✓] All publication figures regenerated with Okabe-Ito colorblind compliance and generous vertical spacing.")

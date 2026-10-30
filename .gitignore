@@ -36,9 +36,19 @@ BixBench/
 # Cloud provider & specific scratch scripts
 modal_pipeline/
 
+# LaTeX Intermediate Files
+*.aux
+*.log
+*.bbl
+*.blg
+*.out
+*.toc
+*.synctex.gz
+
 # OS / Editor Artifacts
 .DS_Store
 .idea/
 .vscode/
 *.swp
 *.swo
+

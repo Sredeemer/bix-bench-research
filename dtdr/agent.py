@@ -275,3 +275,4 @@ class DTDRAgent:
         if not lines:
             return "Workspace is empty."
         return "Workspace Directory Structure:\n" + "\n".join(lines[:60])
+
