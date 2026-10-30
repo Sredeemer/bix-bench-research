@@ -19,7 +19,8 @@ Frontier large language models (LLMs) equipped with extended test-time reasoning
 This repository provides the official implementation of **Dual-Track Decoupled Reasoning (DTDR)** and the forensic audit codebase for our paper:
 
 > **The Reasoning Paradox in Scientific Sandboxes: Why Test-Time Compute Fails in Autonomous Bioinformatics and How to Fix It**  
-> *Derek Amuna and Redeemer Salami Okekale (University of Ghana)*  
+> *Derek Amuna, Redeemer Salami Okekale, Rachel Ama Adadziwa Akorful, Felix Coker, Collins M. Morang'a, Peter Kojo Quashie, Emmanuel Akomanin Asiamah, and Rosina Afua Ampomah Carr*  
+> *University of Ghana | University of Health and Allied Sciences (UHAS) | University of Michigan*  
 > arXiv: `q-bio.QM` / `cs.AI`
 
 ---
@@ -198,7 +199,7 @@ If you build upon this work or use the DTDR scaffold in your research, please ci
 ```bibtex
 @article{amuna2026reasoning,
   title   = {The Reasoning Paradox in Scientific Sandboxes: Why Test-Time Compute Fails in Autonomous Bioinformatics and How to Fix It},
-  author  = {Amuna, Derek and Salami Okekale, Redeemer},
+  author  = {Amuna, Derek and Salami Okekale, Redeemer and Akorful, Rachel Ama Adadziwa and Coker, Felix and Morang'a, Collins M. and Quashie, Peter Kojo and Asiamah, Emmanuel Akomanin and Carr, Rosina Afua Ampomah},
   journal = {arXiv preprint arXiv:2603.XXXXX},
   year    = {2026},
   url     = {https://github.com/Sredeemer/bix-bench-research}
